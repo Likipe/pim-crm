@@ -1,0 +1,6 @@
+css:
+  pim_ui:
+    # - bundles/pimui/css/pim.less
+    - bundles/pimui/css/slimbox2.css
+    - bundles/pimui/css/flags.less
+    - bundles/pimui/css/selectize.bootstrap2.css

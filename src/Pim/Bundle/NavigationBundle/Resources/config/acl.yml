@@ -1,0 +1,23 @@
+pim_navigation:
+    type: action
+    label: Access to main menu entries
+
+pim_navigation_collect:
+    type: action
+    label: Collect menu entry
+
+pim_navigation_enrich:
+    type: action
+    label: Enrich menu entry
+
+pim_navigation_spread:
+    type: action
+    label: Spread menu entry
+
+pim_navigation_settings:
+    type: action
+    label: Settings menu entry
+
+pim_navigation_system:
+    type: action
+    label: System menu entry

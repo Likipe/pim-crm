@@ -1,0 +1,126 @@
+{% macro createBtn(entity, url, attr) %}
+{% spaceless %}
+    {% set title = ('btn.create.' ~ entity)|trans|capitalize %}
+    <a class="btn btn-primary pull-right{% if attr.class is defined %} {{ attr.class }}{% endif %}" href="{{ url ? url : 'javascript:void(0);' }}" title="{{ title }}"{% if attr %}{% for key, value in attr %}{% if key != 'class' %} {{ key }}="{{ value }}"{% endif %}{% endfor %}{% endif %}>{{ title }}</a>
+{% endspaceless %}
+{% endmacro %}
+
+{% macro submitBtn(text, icon) %}
+{% spaceless %}
+    {% set text = text|default('btn.save')|trans|capitalize %}
+    <button type="submit" class="btn btn-primary" title="{{ text }}">
+        {% if icon %}
+            <i class="icon-{{ icon }}"></i>
+        {% endif %}
+        {{ text }}
+    </button>
+{% endspaceless %}
+{% endmacro %}
+
+{% macro backLink(url, title) %}
+{% spaceless %}
+    {% set title = title|default('btn.to grid') %}
+    <a class="btn icons-holder back-link" href="{{ url }}" title="{{ title|trans|capitalize }}"><i class="icon-chevron-left"></i></a>
+{% endspaceless %}
+{% endmacro %}
+
+{% macro deleteLinkAttributes(url, redirectUrl, message, title, successMessage) %}{% spaceless %}
+    {% set message = message|default('confirmation.remove.item') %}
+    {% set title = title|default('confirmation.delete'|trans) %}
+    {% set successMessage = successMessage|default('flash.entity.removed'|trans) %}
+    href="javascript:void(0);" data-dialog="confirm" data-title="{{ title }}" data-message="{{ message }}" data-url="{{ url }}" data-redirect-url="{{ redirectUrl }}" data-method="DELETE" data-error-message="{% trans %}The element could not be deleted{% endtrans %}" data-success-message="{{ successMessage }}"
+{% endspaceless %}{% endmacro %}
+
+
+{% macro deleteLink(url, redirectUrl, message, title, successMessage) %}{% spaceless %}
+    {% import _self as elements %}
+    <a class="btn icons-holder-text no-hash" title="{{ 'btn.delete'|trans|capitalize }}" {{elements.deleteLinkAttributes(url, redirectUrl, message, title, successMessage)}} >
+        <i class="icon-trash"></i>
+        {{ 'btn.delete'|trans|capitalize }}
+    </a>
+{% endspaceless %}{% endmacro %}
+
+{% macro link(text, url, opts = {}) %}
+{% spaceless %}
+    {% set title = opts.title is defined ? opts.title : text %}
+    {% set icon = opts.icon is defined ? opts.icon : null %}
+    <a{% if opts.id is defined %} id="{{ opts.id }}"{% endif %} class="btn {{ opts.class is defined ? opts.class|join(' ') }}{% if text and icon %} icons-holder-text{% elseif icon %} icons-holder{% endif %}" href="{{ url ? url : 'javascript:void(0);' }}"{% if title %} title="{{ title|trans|capitalize }}"{% endif %}{% if opts.attr is defined %}{% for key, value in opts.attr %} {{ key }}="{{ value }}"{% endfor %}{% endif %}>
+        {% if icon %}<i class="icon-{{ icon }}"></i>{% endif %}
+        {{ text|trans|capitalize }}
+    </a>
+{% endspaceless %}
+{% endmacro %}
+
+{% macro page_header(title, buttons, subtitle, left, right) %}
+    <div class="navigation clearfix navbar-extra">
+        <div class="row-fluid">
+            {% if buttons is not empty %}
+                <div class="navbar-buttons pull-right">
+                    {{ buttons }}
+                </div>
+            {% endif %}
+            <div class="navbar-content pull-left">
+                <div class="navbar-title clearfix-oro">
+                    <div class="sub-title">{{ title|first|capitalize ~ title[1:] }}</div>
+                    {% if subtitle is not empty %}
+                        <span class="separator">/</span>
+                        <div class="sub-title">{{ subtitle }}</div>
+                    {% endif %}
+                </div>
+                {{ left }}
+           </div>
+            {{ right }}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro form_navbar(tabs) %}
+    <div id="form-navbar" class="navbar navbar-static scrollspy-nav">
+        <div class="navbar-inner">
+            <div class="row-fluid">
+                {% if tabs is not empty %}
+                    <ul class="nav">
+                        {% if tabs is iterable %}
+                            {% for tab in tabs %}
+                                <li{% if loop.first %} class="active"{% endif %}><a href="#{{ tab|replace({' ': '-', '.': '-'})|lower }}" data-toggle="tab">{{ tab|trans }}</a></li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="active"><a href="#{{ tabs|replace({' ': '-', '.': '-'})|lower }}" data-toggle="tab">{{ tabs|trans|capitalize }}</a></li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro form_errors(form) %}
+    {% if form.vars.errors|length %}
+        <div class="alert alert-error fade in top-messages">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <div class="message">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro accordion(items = {}, counter = 1, no_buffer = false) %}
+    <div class="accordion">
+        {% for title, content in items %}
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" href="#collapse-{{ counter }}-{{ loop.index }}">
+                        <i class="icon-collapse-alt"></i>
+                        {{ title|trans }}
+                    </a>
+                </div>
+                <div id="collapse-{{ counter }}-{{ loop.index }}" class="accordion-body in">
+                    <div class="accordion-inner{{ no_buffer ? '-unbuffered' : '' }}">
+                        {{ content|raw }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}

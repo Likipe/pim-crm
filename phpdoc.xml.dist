@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <parser>
+        <target>build/api_cache</target>
+    </parser>
+
+    <transformer>
+        <target>build/api</target>
+    </transformer>
+
+    <files>
+        <directory>src</directory>
+        <ignore>*Tests*</ignore>
+    </files>
+</phpdoc>

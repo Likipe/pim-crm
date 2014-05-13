@@ -1,0 +1,43 @@
+{% extends 'PimCatalogBundle::layout.html.twig' %}
+
+{% block content %}
+    {% set currentFamily = family is defined ? family.id : null %}
+    <div id="family-container" class="row-fluid">
+        <div class="sidebar-list">
+            <ul>
+                {% for familyId, familyLabel in families %}
+                <li class="{{ familyId == currentFamily ? 'active' : '' }}"><a href="{{ path('pim_catalog_family_edit', {'id': familyId}) }}">{{ familyLabel }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="form-tab">
+            {% block familyTab %}
+            {% endblock familyTab %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block head_script_component %}
+    {{ parent() }}
+    <script type="text/javascript">
+        require(
+            ['jquery', 'jquery.sidebarize', 'bootstrap-tooltip'],
+            function ($){
+                'use strict';
+                $(function() {
+                    var createBtn = $('<a>', {
+                        'href': '{{ path("pim_catalog_family_create") }}',
+                        'data-toggle': 'tooltip',
+                        'data-placement': 'right',
+                        'data-original-title': '{{ "btn.create.family"|trans|capitalize }}'
+                    }).html(
+                        $('<i>', { 'class': 'icon-plus-sign' })
+                    );
+
+                    $('#family-container').sidebarize({ buttons: [ createBtn ] });
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+            }
+        );
+    </script>
+{% endblock %}

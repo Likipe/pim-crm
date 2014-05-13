@@ -1,0 +1,4 @@
+Pim\Bundle\ImportExportBundle\Processor\ValidCategoryCreationProcessor:
+    properties:
+        circularRefsChecked:
+            - Type: boolean

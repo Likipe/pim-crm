@@ -1,0 +1,128 @@
+{% extends 'PimCatalogBundle::layout.html.twig' %}
+
+{% oro_title_set({ params: { "%product.sku%": product.label } }) %}
+
+{% block head_script %}
+    {{ parent() }}
+    {% include 'OroGridBundle:Include:javascript.html.twig' with {'datagridView': historyDatagrid, 'selector': '#history-grid'} %}
+    {% include 'PimCatalogBundle:Product:_js-handler.html.twig' %}
+{% endblock %}
+
+{% block content %}
+
+    {% include 'PimCatalogBundle:ProductAttribute:_available-attributes-form.html.twig' with {
+        'form': attributesForm,
+        'action': path('pim_catalog_product_addproductattributes', {'id': product.id, 'dataLocale': dataLocale})
+    } %}
+
+    {{ JSFV(form) }}
+    {{ form_start(form, {
+        'action': path('pim_catalog_product_edit', { id: form.vars.value.id, dataLocale: dataLocale }),
+        'attr': {
+            'class': 'product-edit',
+            'data-updated-title': 'confirmation.leave'|trans,
+            'data-updated-message': 'confirmation.discard changes'|trans({ '%entity%': 'product'|trans })
+        }
+    }) }}
+
+        {% set title = 'product'|trans %}
+
+        {% set buttons %}
+            {{ elements.backLink(path('pim_catalog_product_index')) }}
+            <div class="btn-group">
+                {% if form.enabled is defined %}
+                    {{ form_widget(form.enabled) }}
+                    <button id="switch_status" type="button" class="btn">{{ ('info.product.' ~ (form.enabled.vars.value ? 'disable' : 'enable'))|trans }}</button>
+                {% endif %}
+            </div>
+            {% if resource_granted("pim_catalog_product_remove") %}
+                {{ elements.deleteLink(path('pim_catalog_product_remove', { id: form.vars.value.id }), path('pim_catalog_product_index'), 'confirmation.remove.product'|trans({ '%name%': product.label }), "", 'flash.product.removed'|trans) }}
+            {% endif %}
+            {{ elements.submitBtn }}
+        {% endset %}
+
+        {% set subtitle %}
+            <div id="locale-switcher" class="btn-group sub-title">
+                <span class="product-name dropdown-toggle" data-toggle="dropdown">
+                    {{ dataLocale|flag }}
+                    {{ product.label }}
+                    <i class="icon-caret-down"></i>
+                </span>
+                <ul class="dropdown-menu">
+                    {% for locale in locales %}
+                        <li class="{{ locale.code == dataLocale ? 'active' : '' }}">
+                            <a href="{{ path('pim_catalog_product_edit', {id: form.vars.value.id, dataLocale: locale.code}) }}" title="{{ locale_label(locale.code) }}">
+                                <span class="icon pull-left">
+                                    {% if locale == dataLocale %}
+                                        <i class="icon-bullet"></i>
+                                    {% endif %}
+                                </span>
+                                <span class="code">
+                                    {{ locale.code|flag }}
+                                </span>
+                                <span class="title">{{ product.label(locale.code) }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="status-enabled pull-left">
+                {% if form.enabled.vars.value %}
+                    <div class="badge badge-enabled status-enabled"><i class="icon-status-enabled icon-circle"></i>{{ 'info.product.enabled'|trans }}</div>
+                {% else %}
+                    <div class="badge badge-disabled status-disabled"><i class="icon-status-disabled icon-circle"></i>{{ 'info.product.disabled'|trans }}</div>
+                {% endif %}
+            </div>
+        {% endset %}
+
+        {% set left %}
+            <ul class="inline">
+                <li>
+                    {{ 'family'|trans|capitalize }}: {{ form.vars.value.family|capitalize|default('N/A'|trans) }}
+                    {% if resource_granted('pim_catalog_product_change_family') %}
+                        <i id="edit-family" class="icon-pencil"></i>
+                    {% endif %}
+                </li>
+
+                {% if form.vars.value.groups|length != 0 %}
+                <li>
+                    {{ 'groups'|trans|capitalize }}:
+                    {% for group in form.vars.value.groups %}
+                        <a id="group-products-{{ group.id }}" href="#"
+                        {% if group.type.isVariant %}
+                            data-toggle="tooltip" data-placement="bottom" data-html="true"
+                            data-original-title="{{ 'info.group.axis'|trans({'%attributes%': group.attributes|join(', ')}) }}"
+                        {% endif %}
+                        >
+                            {{ group.label }}</a>{% if not loop.last %}, {% endif %}
+                        </a>
+                    {% endfor %}
+                </li>
+                {% endif %}
+
+                <li>{{ 'Created'|trans }}: {{ created ? created.loggedAt|date("Y-m-d h:i:s") : 'N/A'|trans }} {{ 'by'|trans }} {{ created ? created.user.username : 'N/A'|trans }}</li>
+                <li>{{ 'Last update'|trans }}: {{ updated ? updated.loggedAt|date("Y-m-d h:i:s") : 'N/A'|trans }} {{ 'by'|trans }} {{ updated ? updated.user.username : 'N/A'|trans }}</li>
+           </ul>
+        {% endset %}
+
+        {% set right %}
+            <div class="pull-right entity-updated">
+                <span id="updated" class="label label-warning hide">{{ 'info.updated'|trans }}</span>
+            </div>
+        {% endset %}
+
+        {{ elements.page_header(title, buttons, subtitle, left, right) }}
+
+        <div class="layout-content">
+            {% include 'PimCatalogBundle:Product:_navbar.html.twig' %}
+
+            <div class="row-fluid tab-content">
+                {{ elements.form_errors(form) }}
+
+                {% include 'PimCatalogBundle:Product:_tab-panes.html.twig' %}
+
+                {{ form_row(form.id) }}
+            </div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

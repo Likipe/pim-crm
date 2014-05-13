@@ -1,0 +1,297 @@
+{% extends 'OroUIBundle:Form:fields.html.twig' %}
+
+{% block form_start %}
+{% spaceless %}
+    {% set method = method|upper %}
+    {% if method in ["GET", "POST"] %}
+        {% set form_method = method %}
+    {% else %}
+        {% set form_method = "POST" %}
+    {% endif %}
+    {% set formClass = class is defined ? class : 'form-horizontal' %}
+    {% if attr.class is defined %}
+        {% set class = attr.class ~ ' ' ~ formClass %}
+    {% else %}
+        {% set class = formClass %}
+    {% endif %}
+    {% set attr = attr|merge({'class': class }) %}
+    <form id="{{ id }}" method="{{ form_method|lower }}" action="{{ action }}"{% for attrname, attrvalue in attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}{% if multipart %} enctype="multipart/form-data"{% endif %}>
+    {% if form_method != method %}
+        <input type="hidden" name="_method" value="{{ method }}" />
+    {% endif %}
+{% endspaceless %}
+{% endblock form_start %}
+
+{% block form_end %}
+{% spaceless %}
+    {{ form_row(form._token) }}
+</form>
+{% endspaceless %}
+{% endblock form_end %}
+
+{% block form_row %}
+    {% spaceless %}
+        {% if form|is_flexible %}
+            {{ block('form_row_flex') }}
+        {% else %}
+            <div class="control-group{% if attr.class is defined %} {{ attr.class }}{% endif %}">
+                {{ form_label(form, '', { label_attr: label_attr|merge({ class: 'control-label' })}) }}
+                <div class="controls{% if errors|length > 0 %} validation-error{% endif %}">
+                    {{ form_widget(form) }}
+                    {% if form.children|length == 0 %}
+                        {{ block('form_info') }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_row %}
+
+{% block form_label %}
+{% spaceless %}
+    {% if label is not sameas(false) %}
+        {% if not compound %}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {% endif %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if label is empty %}
+            {% set label = name|humanize %}
+        {% endif %}
+        {% set isRadioLabel = form.parent.vars.expanded|default(false) and checked is defined %}
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{% if required and not isRadioLabel %}<em>*</em>{% endif %}{{ label|trans({}, translation_domain) }}</label>
+    {% endif %}
+{% endspaceless %}
+{% endblock form_label %}
+
+{% block choice_widget_collapsed %}
+    {% set client_validation = false %}
+    {{ parent() }}
+{% endblock choice_widget_collapsed %}
+
+{% block form_widget_simple %}
+    {% set client_validation = false %}
+    {{ parent() }}
+{% endblock form_widget_simple %}
+
+{% block form_info %}
+    {% spaceless %}
+        {% if type is not defined or type != 'hidden' %}
+            <div class="icons-container">
+                {% if help is defined %}
+                    <i class="icon-info-sign" data-toggle="tooltip" data-placement="right" data-original-title="{{ help|trans }}"></i>
+                {% endif %}
+                {{ form_errors(form) }}
+            </div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_info %}
+
+{% block form_errors %}{% spaceless %}
+    {% if errors|length > 0 %}
+        {% if form.parent %}
+            {% set combinedError = '' %}
+            {% for error in errors %}
+                {% set error = error.messagePluralization is null
+                    ? error.messageTemplate|trans(error.messageParameters, 'validators')
+                    : error.messageTemplate|transchoice(error.messagePluralization, error.messageParameters, 'validators') %}
+                {% set combinedError = (combinedError != '') ? combinedError ~ '; ' ~ error : error %}
+            {% endfor %}
+            <i class="validation-tooltip" data-placement="right" data-toggle="tooltip" data-original-title="{{ combinedError }}"></i>
+        {% else %}
+            {{ parent() }}
+        {% endif %}
+    {% endif %}
+{% endspaceless %}{% endblock form_errors %}
+
+{% block pim_wysiwyg_widget %}
+    {{ block('textarea_widget') }}
+{% endblock pim_wysiwyg_widget %}
+
+{% block pim_translatable_field_row %}
+    {{ form_errors(form) }}
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                {% for translation in form %}
+                    <th>{{ form_label(translation) }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for translation in form %}
+                    <td>
+                        {{ form_errors(translation) }}
+                        {{ form_widget(translation) }}
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block oro_media_row %}
+    {% spaceless %}
+
+    {% set empty = not form.vars.value or not form.vars.value.filePath %}
+    <div class="control-group">
+        {{ form_label(form, null, { 'label_attr': {'class': 'control-label', 'for': form.file.vars.id} }) }}
+        <div class="controls">
+            <label class="upload-zone file{% if empty %} empty{% endif %}">
+                <div class="upload-info">
+                    {% if not empty %}
+                        <a class="no-hash upload-preview" href="{{ path('pim_catalog_media_show', { 'filename': form.vars.value.filename }) }}" target="_blank" title="{{ form.vars.value.originalFilename }}">
+                            <i class="icon-file upload-preview"></i>
+                        </a>
+                    {% else %}
+                        <i class="icon-file upload-preview empty"></i>
+                    {% endif %}
+                    <span class="upload-filename" data-empty-title="{{ 'Drop a file or click here'|trans }}">{% if empty %}{{ 'Drop a file or click here'|trans }}{% else %}{{ form.vars.value.originalFilename }}{% endif %}</span>
+                </div>
+                <a class="btn no-hash remove-upload{% if empty %} hide{% endif %}">
+                    <i class="icon-trash"></i>
+                </a>
+                {% if empty %}
+                    {{ form_widget(form.file) }}
+                {% else %}
+                    {{ form_widget(form.file, { attr: { 'class': 'hide', 'disabled': 'disabled' }}) }}
+                    {{ form_widget(form.removed, {'attr': { 'class': 'hide' }}) }}
+                {% endif %}
+            </label>
+            <div class="icons-container">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+    </div>
+
+    {% endspaceless %}
+{% endblock %}
+
+{% block pim_image_row %}
+    {% spaceless %}
+
+    {% set empty = not form.vars.value or not form.vars.value.filePath %}
+    <div class="control-group">
+        {{ form_label(form, null, { 'label_attr': {'class': 'control-label', 'for': form.file.vars.id} }) }}
+        <div class="controls">
+            <label class="upload-zone image{% if empty %} empty{% endif %}">
+                <div class="upload-info">
+                    {% if not empty %}
+                        <a class="no-hash upload-preview" href="{{ path('pim_catalog_media_show', { 'filename': form.vars.value.filename, 'filter': 'image_preview' }) }}" title="{{ form.vars.value.originalFilename }}" rel="slimbox">
+                            <img src="{{ path('pim_catalog_media_show', { 'filename': form.vars.value.filename, 'filter': 'thumbnail_small' }) }}">
+                        </a>
+                    {% else %}
+                        <i class="icon-camera-retro upload-preview empty"></i>
+                    {% endif %}
+                    <span class="upload-filename" data-empty-title="{{ 'Drop an image or click here'|trans }}">{% if empty %}{{ 'Drop an image or click here'|trans }}{% else %}{{ form.vars.value.originalFilename }}{% endif %}</span>
+                </div>
+                <a class="btn no-hash remove-upload{% if empty %} hide{% endif %}">
+                    <i class="icon-trash"></i>
+                </a>
+                {% if empty %}
+                    {{ form_widget(form.file) }}
+                {% else %}
+                    {{ form_widget(form.file, { 'attr': { 'class': 'hide', 'disabled': 'disabled' }}) }}
+                    {{ form_widget(form.removed, { 'attr': { 'class': 'hide' }}) }}
+                {% endif %}
+            </label>
+            <div class="icons-container">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+    </div>
+
+    {% endspaceless %}
+{% endblock %}
+
+{% block widget_attributes %}
+{% if attr.size is not defined %}
+    {% if attr.class is defined %}
+        {% if 'input-' not in attr.class %}
+            {% set class = attr.class ~ ' input-large' %}
+        {% else %}
+            {% set class = attr.class %}
+        {% endif %}
+    {% else %}
+        {% set class = 'input-large' %}
+    {% endif %}
+    {% set attr = attr|merge({'class': class }) %}
+{% endif %}
+{% spaceless %}
+    id="{{ id }}" name="{{ full_name }}"{% if read_only %} readonly="readonly"{% endif %}{% if disabled %} disabled="disabled"{% endif %}{% if required %} required="required"{% endif %}{% if max_length %} maxlength="{{ max_length }}"{% endif %}{% if pattern %} pattern="{{ pattern }}"{% endif %}
+    {% for attrname, attrvalue in attr %}{% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% else %}{{ attrname }}="{{ attrvalue }}" {% endif %}{% endfor %}
+{% endspaceless %}
+{% endblock widget_attributes %}
+
+{% block switch_widget %}
+{% spaceless %}
+    <div class="switch switch-{{ attr.size is defined ? attr.size : 'small' }}" data-on-label="{{ attr['data-on-label'] is defined ? attr['data-on-label']|trans : 'Yes'|trans }}" data-off-label="{{ attr['data-off-label'] is defined ? attr['data-off-label']|trans : 'No'|trans }}">
+        {% if required %}{% set required = false %}{% endif %}
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %}>
+    </div>
+{% endspaceless %}
+{% endblock switch_widget %}
+
+{% block oro_flexibleentity_metric_row %}
+{% spaceless %}
+    <div class="control-group">
+        {{ form_label(form, null, { 'label_attr': {'class': 'control-label', 'for': form.data.vars.id} }) }}
+        <div class="controls metric input-prepend">
+            {{ form_widget(form.unit, { 'attr': { 'class': 'input-small prepend pull-left' }}) }}
+            {{ form_widget(form.data, { 'attr': { 'class': 'pull-left' }}) }}
+            <div class="icons-container">
+                {{ form_errors(form) }}
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        require(
+            ['jquery', 'jquery.select2', 'selectize'],
+            function ($) {
+                $('#{{ form.unit.vars.id }}').select2('destroy').selectize();
+            }
+        );
+    </script>
+{% endspaceless %}
+{% endblock oro_flexibleentity_metric_row %}
+
+{% block pim_catalog_price_collection_widget %}
+    {% for child in form.children %}
+        {% if child.vars.value.currency == locale_currency() %}
+            {{ form_widget(child) }}
+        {% endif %}
+    {% endfor %}
+    {% for child in form.children %}
+        {% if child.vars.value.currency != locale_currency() %}
+            {{ form_widget(child) }}
+        {% endif %}
+    {% endfor %}
+{% endblock pim_catalog_price_collection_widget %}
+
+{% block pim_catalog_price_widget %}
+{% spaceless %}
+    {{ form_widget(form.currency) }}
+    {{ form_row(form.data, {label:currency_symbol(form.currency.vars.value)} ) }}
+{% endspaceless %}
+{% endblock pim_catalog_price_widget %}
+
+{% block oro_batch_step_element_configuration_widget %}
+    {% for child in form %}
+        {{ form_row(child) }}
+    {% else %}
+        {{ 'No configuration'|trans }}
+    {% endfor %}
+{% endblock oro_batch_step_element_configuration_widget %}
+
+{% block pim_attribute_requirement_widget %}
+    <div class="attribute-requirement" data-required-title="{{ 'Required'|trans }}" data-not-required-title="{{ 'Not required'|trans }}">
+        <input type="checkbox" id="{{ form.required.vars.id }}" name="{{ form.required.vars.full_name }}" class="hide" {% if form.required.vars.checked %}checked="checked"{% endif %} />
+        {% if form.required.vars.checked %}
+        <i class="icon-ok required" data-toggle="tooltip" data-placement="right"></i>
+        {% else %}
+        <i class="icon-circle non-required" data-toggle="tooltip" data-placement="right"></i>
+        {% endif %}
+    </div>
+{% endblock pim_attribute_requirement_widget %}

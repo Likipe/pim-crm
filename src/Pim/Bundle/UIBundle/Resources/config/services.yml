@@ -1,0 +1,10 @@
+services:
+    pim_ui.form.extension.help:
+        class: Pim\Bundle\UIBundle\Form\Extension\FormTypeHelpExtension
+        tags:
+            - { name: form.type_extension, alias: form }
+
+    pim_ui.form.type.switch:
+        class: Pim\Bundle\UIBundle\Form\Type\SwitchType
+        tags:
+            - { name: form.type, alias: switch }
