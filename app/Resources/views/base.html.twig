@@ -21,6 +21,16 @@
     %}
     <link rel="stylesheet" media="all" href="{{ asset_url }}" />
     {% endstylesheets %}
+    {% stylesheets
+            'bundles/oroui/css/all.css'
+            'bundles/oroui/css/less/main.less'
+
+            debug=false
+            filter='cssrewrite,lessphp,yui_css'
+            output='css/oro.css'
+        %}
+        <link rel="stylesheet" media="all" href="{{ asset_url }}" />
+        {% endstylesheets %}
     {{ block('head_style_component') }}
 {% endblock %}
 
