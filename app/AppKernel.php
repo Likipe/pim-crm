@@ -78,6 +78,14 @@ class AppKernel extends Kernel
 
         $bundles = array_merge($bundles, $crmBundles);
 
+        // Likipe bundles
+        $likipeBundles = array(
+            new Likipe\PimUIBundle\LikipePimUIBundle(),
+            new Likipe\PimUserBundle\LikipePimUserBundle(),
+        );
+
+        $bundles = array_merge($bundles, $likipeBundles);
+
         if (in_array($this->getEnvironment(), array('dev', 'test', 'behat'))) {
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();

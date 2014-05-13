@@ -29,8 +29,17 @@
             filter='cssrewrite,lessphp,yui_css'
             output='css/oro.css'
         %}
-        <link rel="stylesheet" media="all" href="{{ asset_url }}" />
-        {% endstylesheets %}
+    <link rel="stylesheet" media="all" href="{{ asset_url }}" />
+    {% endstylesheets %}
+    {% stylesheets
+            'bundles/likipepimui/css/ui.css'
+
+            debug=false
+            filter='cssrewrite,lessphp,yui_css'
+            output='css/likipe.css'
+        %}
+    <link rel="stylesheet" media="all" href="{{ asset_url }}" />
+    {% endstylesheets %}
     {{ block('head_style_component') }}
 {% endblock %}
 

@@ -1,0 +1,7 @@
+parameters:
+#    likipe_pim_ui.example.class: Likipe\PimUIBundle\Example
+
+services:
+#    likipe_pim_ui.example:
+#        class: %likipe_pim_ui.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

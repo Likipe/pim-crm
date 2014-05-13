@@ -1,0 +1,97 @@
+a {
+	color: #2b9742;
+}
+a:hover {
+	color: #324749;
+}
+.pin-bar {
+  background-color: #324749;
+}
+
+.pin-bar .pin-bar-empty {
+  color: #9ca4a5;
+}
+
+#oroplatform-header div.navbar-inner {
+  background-color: #33a544;
+  background-image: none;
+  padding: 10px;
+}
+
+#oroplatform-header div.navbar-inner .nav.top-search .dropdown > .dropdown-toggle:active > [class^="icon-"],
+#oroplatform-header div.navbar-inner .nav.top-search .dropdown > .dropdown-toggle:hover [class^="icon-"], 
+#oroplatform-header div.navbar-inner .nav.top-search .dropdown > .dropdown-toggle:focus > [class^="icon-"], 
+#oroplatform-header div.navbar-inner .nav.top-search .dropdown.open > .dropdown-toggle > [class^="icon-"] {
+  background-color: #2b9742;
+  background-image: none;
+  border: none;
+}
+#oroplatform-header div.navbar-inner .nav.top-search .dropdown > .dropdown-toggle [class^="icon-"] {
+  text-shadow: 0 1px 1px #2b9742;
+}
+.pin-bar .pin-menus .oro-dropdown-toggle:hover {
+  background-color: #2b9742;
+  background-image: none;
+  border: none;
+}
+
+#oroplatform-header .oroplatform-menu > li.dropdown.active:not(:hover) > a {
+  background: #2b9742;
+  border: medium none;
+}
+
+.btn-primary {
+  color: #ffffff;
+  background-color: #33A544;
+  border-color: #2B9742;
+  background-image: none;
+  box-shadow: none;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open .dropdown-toggle.btn-primary {
+  color: #ffffff;
+  background-color: #247b36;
+  border-color: #2B9742;
+  background-image: none;
+  box-shadow: none;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open .dropdown-toggle.btn-primary {
+  background-image: none;
+  box-shadow: none;
+}
+
+.btn-primary.disabled,
+.btn-primary[disabled],
+fieldset[disabled] .btn-primary,
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled:active,
+.btn-primary[disabled]:active,
+fieldset[disabled] .btn-primary:active,
+.btn-primary.disabled.active,
+.btn-primary[disabled].active,
+fieldset[disabled] .btn-primary.active {
+  background-color: #33A544;
+  border-color: #2B9742;
+}
+
+.btn-primary .badge {
+  color: #33A544;
+  background-color: #ffffff;
+}
+
+.flash-messages-frame {
+  top: 90px;
+
+}
